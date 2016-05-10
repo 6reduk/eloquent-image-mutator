@@ -33,11 +33,11 @@ trait EloquentImageMutatorTrait
             if (is_string($value)) {
                 return $this->setImageAttributeForUrlImage($key, $value);
             } else {
-                if ($value instanceof Symfony\Component\HttpFoundation\File\UploadedFile) {
+                if ($value instanceof \Symfony\Component\HttpFoundation\File\UploadedFile) {
                     return $this->setImageAttributeForUploadedFileObject($key, $value);
                 }
 
-                if ($value instanceof SahusoftCom\EloquentImageMutator\Dist\ImageFieldLocal) {
+                if ($value instanceof \SahusoftCom\EloquentImageMutator\Dist\ImageFieldLocal) {
                     return $this->setImageAttributeForImageFieldLocalObject($key, $value);
                 }
             }
