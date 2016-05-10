@@ -7,16 +7,14 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 trait EloquentImageMutatorTrait
 {
-
     public function getAttributeValue($key)
     {
         $value = parent::getAttributeValue($key);
 
-        if(in_array($key, $this->image_fields))
-        {
+        if (in_array($key, $this->image_fields)) {
             $value = $this->retrievePhotoFieldValue($key, $value);
 
-            if(!file_exists(public_path().$value->original->url) || empty($value->original->url)) {
+            if (!file_exists(public_path().$value->original->url) || empty($value->original->url)) {
                 $value = ImageService::getImageObject();
                 $this->attributes[$key] = $value->toJson();
             }
@@ -27,36 +25,22 @@ trait EloquentImageMutatorTrait
 
     public function setAttribute($key, $value)
     {
-        if (in_array($key, $this->image_fields) && $value)
-        {
-            if(empty($value))
+        if (in_array($key, $this->image_fields) && $value) {
+            if (empty($value)) {
                 return parent::setAttribute($key, $value);
-
-            if(is_string($value)) {
-
-                return $this->setImageAttributeForUrlImage($key, $value);
-
-            } else {
-
-                switch (get_class($value)) {
-
-                    case 'Symfony\Component\HttpFoundation\File\UploadedFile':
-                            return $this->setImageAttributeForUploadedFileObject($key, $value);
-                        break;
-                    case 'Illuminate\Http\UploadedFile':
-                            return $this->setImageAttributeForUploadedFileObject($key, $value);
-                        break;
-                    case 'SahusoftCom\EloquentImageMutator\Dist\ImageFieldLocal':
-                            return $this->setImageAttributeForImageFieldLocalObject($key, $value);
-                        break;
-
-                    // case 'value':
-                    //     # code...
-                    //     break;
-
-                }
             }
 
+            if (is_string($value)) {
+                return $this->setImageAttributeForUrlImage($key, $value);
+            } else {
+                if ($value instanceof Symfony\Component\HttpFoundation\File\UploadedFile) {
+                    return $this->setImageAttributeForUploadedFileObject($key, $value);
+                }
+
+                if ($value instanceof SahusoftCom\EloquentImageMutator\Dist\ImageFieldLocal) {
+                    return $this->setImageAttributeForImageFieldLocalObject($key, $value);
+                }
+            }
         }
 
         return parent::setAttribute($key, $value);
@@ -66,19 +50,18 @@ trait EloquentImageMutatorTrait
     {
         parent::boot();
 
-        static::updated(function($model)
-        {
+        static::updated(function ($model) {
             $oldObject = $model->getOriginal();
             $imageFields = $model->image_fields;
 
-            if(count($imageFields) > 0) {
+            if (count($imageFields) > 0) {
                 foreach ($imageFields as $key => $value) {
-
-                    if(empty($oldObject[$value]))
+                    if (empty($oldObject[$value])) {
                         continue;
+                    }
 
                     $imageObject = ImageService::getImageObject($oldObject[$value]);
-                    if($imageObject && !empty($imageObject->original->url) && $model->$value->original->url != $imageObject->original->url) {
+                    if ($imageObject && !empty($imageObject->original->url) && $model->$value->original->url != $imageObject->original->url) {
                         $imageObject->delete();
                     }
                 }
@@ -86,18 +69,16 @@ trait EloquentImageMutatorTrait
 
         });
 
-        static::deleted(function($model)
-        {
+        static::deleted(function ($model) {
             $imageFields = $model->image_fields;
 
-            if(count($imageFields) > 0) {
+            if (count($imageFields) > 0) {
                 foreach ($imageFields as $key => $value) {
                     $model->$value->delete();
                 }
             }
 
         });
-
     }
 
     public function retrievePhotoFieldValue($key, $value)
@@ -127,18 +108,12 @@ trait EloquentImageMutatorTrait
     {
         $arr = parent::toArray();
         foreach ($arr as $key => $value) {
-            if(in_array($key, $this->image_fields))
-            {
-                if(!empty($value))
+            if (in_array($key, $this->image_fields)) {
+                if (!empty($value)) {
                     $arr[$key] = json_decode($value, true);
+                }
             }
         }
         return $arr;
     }
-
-    // public function setImageAttributeForUrlString($key, $value)
-    // {
-    //     return $this->setImageAttributeForFileObject($key, $value);
-    // }
-
 }

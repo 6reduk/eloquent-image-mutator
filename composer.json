@@ -1,8 +1,8 @@
 {
-    "name": "sahusoftcom/eloquent-image-mutator",
-    "description": "One solution for image uploads.",
+    "name": "6reduk/eloquent-image-mutator",
+    "description": "One solution for image uploads. Fork for https://github.com/sahusoftcom/eloquent-image-mutator",
     "keywords": ["photo", "image", "upload", "laravel"],
-    "homepage": "https://github.com/sahusoftcom/eloquent-image-mutator",
+    "homepage": "https://github.com/6reduk/eloquent-image-mutator",
     "require": {
         "php": ">=5.5.9",
         "laravel/framework": "^5.1",
@@ -19,6 +19,9 @@
         {
             "name": "Mrigank",
             "email": "mridul@sahusoft.com"
+        },{
+            "name": "Dmitriy Shestakov",
+            "email": "6reduk@gmail.com"
         }
     ]
 }
